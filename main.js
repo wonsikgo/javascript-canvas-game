@@ -136,8 +136,11 @@ function animate() {
 
       // 적 터치
       if (dist - enemy.radius - projectile.radius - 1 < 1) {
-        if (enemy.radius - 10 > 10) {
+        if (enemy.radius - 10 > 5) {
           enemy.radius -= 10;
+          gsap.to(enemy, {
+            radius: enemy.radius - 10,
+          });
           setTimeout(() => {
             projectiles.splice(projectileIndex, 1);
           }, 0);
@@ -163,7 +166,7 @@ addEventListener("click", (e) => {
     y: Math.sin(angle) * 4,
   };
   projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, "wwhite", velocity)
+    new Projectile(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
   );
 });
 
