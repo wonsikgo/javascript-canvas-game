@@ -4,6 +4,11 @@ const c = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+const scoreEl = document.querySelector("#scoreEl");
+const startGameBtn = document.querySelector("#startGameBtn");
+const modalEl = document.querySelector("#modalEl");
+const bigScoreEl = document.querySelector("#bigScoreEl");
+
 class Player {
   constructor(x, y, radius, color) {
     this.x = x;
@@ -131,6 +136,7 @@ function spawnEnemies() {
 }
 
 let animationId;
+let score = 0;
 
 function animate() {
   animationId = requestAnimationFrame(animate);
@@ -168,6 +174,9 @@ function animate() {
     if (dist - enemy.radius - player.radius - 1 < 1) {
       console.log("게임 종료");
       cancelAnimationFrame(animationId);
+
+      bigScoreEl.innerHTML = score;
+      modalEl.style.display = "flex";
     }
 
     projectiles.forEach((projectile, projectileIndex) => {
@@ -189,8 +198,12 @@ function animate() {
             )
           );
         }
- 
+
         if (enemy.radius - 10 > 5) {
+          // 스코어 증가
+          score += 100;
+          scoreEl.innerHTML = score;
+
           gsap.to(enemy, {
             radius: enemy.radius - 10,
           });
@@ -199,6 +212,11 @@ function animate() {
           }, 0);
         } else {
           console.log("적 제거");
+
+          // 스코어 증가
+          score += 250;
+          scoreEl.innerHTML = score;
+
           setTimeout(() => {
             enemies.splice(index, 1);
             projectiles.splice(projectileIndex, 1);
@@ -223,5 +241,8 @@ addEventListener("click", (e) => {
   );
 });
 
-animate();
-spawnEnemies();
+startGameBtn.addEventListener("click", () => {
+  animate();
+  spawnEnemies();
+  modalEl.style.display = "none";
+});
