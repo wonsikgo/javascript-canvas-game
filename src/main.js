@@ -1,3 +1,10 @@
+"use strcit";
+
+import Player from "./player.js";
+import Projectile from "./projectile.js";
+import Enemy from "./enemy.js";
+import Particle from "./particle.js";
+
 const canvas = document.querySelector("canvas");
 const c = canvas.getContext("2d");
 
@@ -9,109 +16,16 @@ const startGameBtn = document.querySelector("#startGameBtn");
 const modalEl = document.querySelector("#modalEl");
 const bigScoreEl = document.querySelector("#bigScoreEl");
 
-class Player {
-  constructor(x, y, radius, color) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-  }
-
-  draw() {
-    c.beginPath();
-    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    c.fillStyle = this.color;
-    c.fill();
-  }
-}
-
-class Projectile {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-  }
-
-  draw() {
-    c.beginPath();
-    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    c.fillStyle = this.color;
-    c.fill();
-  }
-
-  update() {
-    this.draw();
-    this.x = this.x + this.velocity.x;
-    this.y = this.y + this.velocity.y;
-  }
-}
-
-class Enemy {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-  }
-
-  draw() {
-    c.beginPath();
-    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    c.fillStyle = this.color;
-    c.fill();
-  }
-
-  update() {
-    this.draw();
-    this.x = this.x + this.velocity.x;
-    this.y = this.y + this.velocity.y;
-  }
-}
-
-const friction = 0.99;
-class Particle {
-  constructor(x, y, radius, color, velocity) {
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
-    this.velocity = velocity;
-    this.alpha = 1;
-  }
-
-  draw() {
-    c.save();
-    c.globalAlpha - this.alpha;
-    c.beginPath();
-    c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    c.fillStyle = this.color;
-    c.fill();
-    c.restore();
-  }
-
-  update() {
-    this.draw();
-    this.velocity.x *= friction;
-    this.velocity.y *= friction;
-    this.x = this.x + this.velocity.x;
-    this.y = this.y + this.velocity.y;
-    this.alpha -= 0.01;
-  }
-}
-
 const x = canvas.width / 2;
 const y = canvas.height / 2;
 
-let player = new Player(x, y, 10, "white");
+let player = null;
 let projectiles = [];
 let enemies = [];
 let particles = [];
 
 function init() {
-  player = new Player(x, y, 10, "white");
+  player = new Player(c, x, y, 10, "white");
   projectiles = [];
   enemies = [];
   particles = [];
@@ -141,7 +55,7 @@ function spawnEnemies() {
       x: Math.cos(angle),
       y: Math.sin(angle),
     };
-    enemies.push(new Enemy(x, y, radius, color, velocity));
+    enemies.push(new Enemy(c, x, y, radius, color, velocity));
   }, 1000);
 }
 
@@ -197,6 +111,7 @@ function animate() {
         for (let i = 0; i < enemy.radius; i++) {
           particles.push(
             new Particle(
+              c,
               projectile.x,
               projectile.y,
               Math.random() * 2,
@@ -247,7 +162,7 @@ addEventListener("click", (e) => {
     y: Math.sin(angle) * 4,
   };
   projectiles.push(
-    new Projectile(canvas.width / 2, canvas.height / 2, 5, "white", velocity)
+    new Projectile(c, canvas.width / 2, canvas.height / 2, 5, "white", velocity)
   );
 });
 
