@@ -11,9 +11,10 @@ const c = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const scoreEl = document.querySelector("#scoreEl");
 const startGameBtn = document.querySelector("#startGameBtn");
 const modalEl = document.querySelector("#modalEl");
+
+const scoreEl = document.querySelector("#scoreEl");
 const bigScoreEl = document.querySelector("#bigScoreEl");
 
 const x = canvas.width / 2;
@@ -23,6 +24,8 @@ let player = null;
 let projectiles = [];
 let enemies = [];
 let particles = [];
+let animationId;
+let score = 0;
 
 function init() {
   player = new Player(c, x, y, 10, "white");
@@ -58,9 +61,6 @@ function spawnEnemies() {
     enemies.push(new Enemy(c, x, y, radius, color, velocity));
   }, 1000);
 }
-
-let animationId;
-let score = 0;
 
 function animate() {
   animationId = requestAnimationFrame(animate);
