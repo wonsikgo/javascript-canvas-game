@@ -6,9 +6,9 @@ import Enemy from "./enemy.js";
 import Particle from "./particle.js";
 
 export default class Game {
-  constrcutor() {
+  constructor() {
     this.canvas = document.querySelector("canvas");
-    this.c = canvas.getContext("2d");
+    this.c = this.canvas.getContext("2d");
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
@@ -17,8 +17,8 @@ export default class Game {
     this.scoreEl = document.querySelector("#scoreEl");
     this.bigScoreEl = document.querySelector("#bigScoreEl");
 
-    this.x = canvas.width / 2;
-    this.y = canvas.height / 2;
+    this.x = this.canvas.width / 2;
+    this.y = this.canvas.height / 2;
 
     this.player = null;
     this.projectiles = [];
@@ -32,13 +32,13 @@ export default class Game {
   }
 
   init() {
-    this.player = new Player(c, x, y, 10, "white");
+    this.player = new Player(this.c, this.x, this.y, 10, "white");
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
     this.score = 0;
-    this.scoreEl.innerHTML = 0;
-    this.bigScoreEl.innerHTML = 0;
+    this.scoreEl.innerHTML = "0";
+    this.bigScoreEl.innerHTML = "0";
   }
 
   addClickEvent() {
@@ -51,7 +51,7 @@ export default class Game {
         x: Math.cos(angle) * 4,
         y: Math.sin(angle) * 4,
       };
-      projectiles.push(
+      this.projectiles.push(
         new Projectile(
           this.c,
           this.canvas.width / 2,
@@ -88,14 +88,14 @@ export default class Game {
         x: Math.cos(angle),
         y: Math.sin(angle),
       };
-      this.enemies.push(new Enemy(c, x, y, radius, color, velocity));
+      this.enemies.push(new Enemy(this.c, x, y, radius, color, velocity));
     }, 1000);
   }
 
   animate() {
     this.animationId = requestAnimationFrame(this.animate);
     this.c.fillStyle = "rgba(0, 0, 0, 0.1)";
-    this.c.fillRect(0, 0, canvas.width, canvas.height);
+    this.c.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.player.draw();
     this.particles.forEach((particle, index) => {
       if (particle.alpha <= 0) {
@@ -180,5 +180,9 @@ export default class Game {
         }
       });
     });
+  }
+
+  hidePopup() {
+    this.modalEl.style.display = "none";
   }
 }
