@@ -92,14 +92,14 @@ export default class Game {
     }, 1000);
   }
 
-  animate() {
+  animate = () => {
     this.animationId = requestAnimationFrame(this.animate);
     this.c.fillStyle = "rgba(0, 0, 0, 0.1)";
     this.c.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.player.draw();
     this.particles.forEach((particle, index) => {
       if (particle.alpha <= 0) {
-        particles.splice(index, 1);
+        this.particles.splice(index, 1);
       } else {
         particle.update();
       }
@@ -180,7 +180,7 @@ export default class Game {
         }
       });
     });
-  }
+  };
 
   hidePopup() {
     this.modalEl.style.display = "none";
