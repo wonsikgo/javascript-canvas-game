@@ -1,3 +1,5 @@
+"use strict";
+
 export default class Projectile {
   constructor(canvas, x, y, radius, color, velocity) {
     this.canvas = canvas;

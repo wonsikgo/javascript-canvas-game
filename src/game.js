@@ -5,6 +5,12 @@ import Projectile from "./projectile.js";
 import Enemy from "./enemy.js";
 import Particle from "./particle.js";
 
+const PROJECTILE_COLOR = "white";
+const PROJECTILE_RADIUS = 5;
+const PROJECTILE_VELOCITY = 4;
+
+const ENEMY_VELOCITY = 2;
+
 export default class Game {
   constructor() {
     this.canvas = document.querySelector("canvas");
@@ -25,7 +31,7 @@ export default class Game {
     this.enemies = [];
     this.particles = [];
 
-    this.animationId;
+    this.animationId = null;
     this.score = 0;
 
     this.addClickEvent();
@@ -43,21 +49,24 @@ export default class Game {
 
   addClickEvent() {
     window.addEventListener("click", (e) => {
+      // 1. x, y거리를 기반으로 각도 생성
       const angle = Math.atan2(
         e.clientY - this.canvas.height / 2,
         e.clientX - this.canvas.width / 2
       );
+
+      // 2. x, y 속도 지정
       const velocity = {
-        x: Math.cos(angle) * 4,
-        y: Math.sin(angle) * 4,
+        x: Math.cos(angle) * PROJECTILE_VELOCITY,
+        y: Math.sin(angle) * PROJECTILE_VELOCITY,
       };
       this.projectiles.push(
         new Projectile(
           this.c,
           this.canvas.width / 2,
           this.canvas.height / 2,
-          5,
-          "white",
+          PROJECTILE_RADIUS,
+          PROJECTILE_COLOR,
           velocity
         )
       );
@@ -66,27 +75,30 @@ export default class Game {
 
   spawnEnemies() {
     setInterval(() => {
-      const radius = Math.random() * (30 - 4) + 4;
+      const radius = this.getRandomNumber(30, 4);
 
       let x;
       let y;
 
       if (Math.random() < 0.5) {
+        // x는 가장 왼쪽 or 오른쪽 끝부분 지정
         x = Math.random() < 0.5 ? 0 - radius : this.canvas.width + radius;
         y = Math.random() * this.canvas.height;
       } else {
+        // y는 가장 위쪽 or 아래쪽 끝부분 지정
         x = Math.random() * this.canvas.width;
         y = Math.random() < 0.5 ? 0 - radius : this.canvas.height + radius;
       }
       const color = `hsl(${Math.random() * 360}, 50%, 50%)`;
 
+      // 가운데로 향하게 만드는 각도 지정
       const angle = Math.atan2(
         this.canvas.height / 2 - y,
         this.canvas.width / 2 - x
       );
       const velocity = {
-        x: Math.cos(angle),
-        y: Math.sin(angle),
+        x: Math.cos(angle) * ENEMY_VELOCITY,
+        y: Math.sin(angle) * ENEMY_VELOCITY,
       };
       this.enemies.push(new Enemy(this.c, x, y, radius, color, velocity));
     }, 1000);
@@ -94,9 +106,30 @@ export default class Game {
 
   animate = () => {
     this.animationId = requestAnimationFrame(this.animate);
+    this.reDraw();
+    this.updateParticle();
+    this.removeProjectile();
+    this.updateEnemy();
+  };
+
+  showPopup() {
+    this.modalEl.style.display = "flex";
+  }
+  hidePopup() {
+    this.modalEl.style.display = "none";
+  }
+
+  getRandomNumber(max, min) {
+    return Math.random() * (max - min) + min;
+  }
+
+  reDraw() {
     this.c.fillStyle = "rgba(0, 0, 0, 0.1)";
     this.c.fillRect(0, 0, this.canvas.width, this.canvas.height);
     this.player.draw();
+  }
+
+  updateParticle() {
     this.particles.forEach((particle, index) => {
       if (particle.alpha <= 0) {
         this.particles.splice(index, 1);
@@ -104,6 +137,9 @@ export default class Game {
         particle.update();
       }
     });
+  }
+
+  removeProjectile() {
     this.projectiles.forEach((projectile, index) => {
       projectile.update();
 
@@ -120,69 +156,81 @@ export default class Game {
         }, 0);
       }
     });
-    this.enemies.forEach((enemy, index) => {
+  }
+
+  updateEnemy() {
+    this.enemies.forEach((enemy, enemyIndex) => {
       enemy.update();
-
-      const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
-
-      if (dist - enemy.radius - this.player.radius - 1 < 1) {
-        console.log("게임 종료");
-        cancelAnimationFrame(this.animationId);
-
-        this.bigScoreEl.innerHTML = this.score;
-        this.modalEl.style.display = "flex";
-      }
+      this.endGame(enemy);
 
       this.projectiles.forEach((projectile, projectileIndex) => {
+        // Math.hypot 제곱의 합의 제곱근을 반환, 적과 발사체의 거리
         const dist = Math.hypot(projectile.x - enemy.x, projectile.y - enemy.y);
 
         // 적 터치
         if (dist - enemy.radius - projectile.radius - 1 < 1) {
-          for (let i = 0; i < enemy.radius; i++) {
-            this.particles.push(
-              new Particle(
-                this.c,
-                projectile.x,
-                projectile.y,
-                Math.random() * 2,
-                enemy.color,
-                {
-                  x: (Math.random() - 0.5) * (Math.random() * 8),
-                  y: (Math.random() - 0.5) * (Math.random() * 8),
-                }
-              )
-            );
-          }
-
-          if (enemy.radius - 10 > 5) {
-            // 스코어 증가
-            this.score += 100;
-            this.scoreEl.innerHTML = this.score;
-
-            gsap.to(enemy, {
-              radius: enemy.radius - 10,
-            });
-            setTimeout(() => {
-              this.projectiles.splice(projectileIndex, 1);
-            }, 0);
-          } else {
-            console.log("적 제거");
-
-            // 스코어 증가
-            this.score += 250;
-            this.scoreEl.innerHTML = this.score;
-
-            setTimeout(() => {
-              this.enemies.splice(index, 1);
-              this.projectiles.splice(projectileIndex, 1);
-            }, 0);
-          }
+          this.createParticle(projectile, enemy);
+          this.updateGameState(enemy, enemyIndex, projectileIndex);
         }
       });
     });
-  };
+  }
 
-  hidePopup() {
-    this.modalEl.style.display = "none";
+  endGame(enemy) {
+    const dist = Math.hypot(this.player.x - enemy.x, this.player.y - enemy.y);
+
+    if (dist - enemy.radius - this.player.radius - 1 < 1) {
+      console.log("게임 종료");
+      cancelAnimationFrame(this.animationId);
+
+      this.bigScoreEl.innerHTML = this.score;
+      this.showPopup();
+    }
+  }
+
+  createParticle(projectile, enemy) {
+    for (let i = 0; i < enemy.radius; i++) {
+      this.particles.push(
+        new Particle(
+          this.c,
+          projectile.x,
+          projectile.y,
+          Math.random() * 2,
+          enemy.color,
+          {
+            x: (Math.random() - 0.5) * (Math.random() * 8),
+            y: (Math.random() - 0.5) * (Math.random() * 8),
+          }
+        )
+      );
+    }
+  }
+
+  updateGameState(enemy, enemyIndex, projectileIndex) {
+    if (enemy.radius - 10 > 5) {
+      // 스코어 증가
+      this.score += 100;
+      this.scoreEl.innerHTML = this.score;
+
+      // 적 크기 감소
+      gsap.to(enemy, {
+        radius: enemy.radius - 10,
+      });
+      setTimeout(() => {
+        this.projectiles.splice(projectileIndex, 1);
+      }, 0);
+    } else {
+      console.log("적 제거");
+
+      // 스코어 증가
+      this.score += 250;
+      this.scoreEl.innerHTML = this.score;
+
+      // 비동기 적용
+      setTimeout(() => {
+        this.enemies.splice(enemyIndex, 1);
+        this.projectiles.splice(projectileIndex, 1);
+      }, 0);
+    }
   }
 }

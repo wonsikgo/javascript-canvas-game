@@ -1,4 +1,4 @@
-"use strcit";
+"use strict";
 
 export default class Player {
   constructor(canvas, x, y, radius, color) {
