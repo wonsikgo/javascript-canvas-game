@@ -1,5 +1,5 @@
 const bgm = new Audio("../static/sound/MP_Waterfall.mp3");
-const gameLoseSound = new Audio("../static/sound/MP_티모 웃음소리-1.mp3");
+const gameEndSound = new Audio("../static/sound/MP_티모 웃음소리-1.mp3");
 
 /* 
     Thanks to, Mike Koenig
@@ -21,11 +21,13 @@ const bombSound = new Audio("../static/sound/MP_Bomb Explosion 1.mp3");
 const shootingSound = new Audio("../static/sound/MP_Bullet Whizzing By.mp3");
 
 export function playBgm() {
+  bgm.loop = true;
+  bgm.volume = 0.7;
   playSound(bgm);
 }
 
-export function playGameLose() {
-  playSound(gameLoseSound);
+export function playEndGame() {
+  playSound(gameEndSound);
 }
 
 export function playBomb() {
@@ -36,14 +38,15 @@ export function playShooting() {
   playSound(shootingSound);
 }
 
-export function playShooting() {
+export function stopBgm() {
   stopSound(bgm);
 }
 
 function playSound(sound) {
+  sound.currentTime = 0;
   sound.play();
 }
 
 function stopSound(sound) {
-  sound.stop();
+  sound.pause();
 }

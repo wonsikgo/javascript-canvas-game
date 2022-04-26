@@ -4,6 +4,7 @@ import Player from "./player.js";
 import Projectile from "./projectile.js";
 import Enemy from "./enemy.js";
 import Particle from "./particle.js";
+import * as sound from "./sound.js";
 
 const PROJECTILE_COLOR = "white";
 const PROJECTILE_RADIUS = 5;
@@ -33,10 +34,15 @@ export default class Game {
     this.score = 0;
     this.level = 1;
     this.speedByLevel = 1;
+
+    this.isPlay = false;
+
     this.addClickEvent();
   }
 
   init() {
+    sound.playBgm();
+    this.isPlay = true;
     this.player = new Player(this.c, this.x, this.y, 10, "white");
     this.projectiles = [];
     this.enemies = [];
@@ -50,6 +56,8 @@ export default class Game {
 
   addClickEvent() {
     window.addEventListener("click", (e) => {
+      if (!this.isPlay) return;
+      sound.playShooting();
       // 1. x, y거리를 기반으로 각도 생성
       const angle = Math.atan2(
         e.clientY - this.canvas.height / 2,
@@ -75,6 +83,7 @@ export default class Game {
   }
 
   spawnEnemies() {
+    if (!this.isPlay) return;
     setInterval(() => {
       const radius = this.getRandomNumber(30, 4);
 
@@ -189,6 +198,9 @@ export default class Game {
 
     if (dist - enemy.radius - this.player.radius - 1 < 1) {
       console.log("게임 종료");
+      this.isPlay = false;
+      sound.playEndGame();
+      sound.stopBgm();
       cancelAnimationFrame(this.animationId);
 
       this.bigScoreEl.innerHTML = this.score;
@@ -225,6 +237,7 @@ export default class Game {
         radius: enemy.radius - 10,
       });
       setTimeout(() => {
+        sound.playBomb();
         this.projectiles.splice(projectileIndex, 1);
       }, 0);
     } else {
@@ -236,6 +249,7 @@ export default class Game {
 
       // 비동기 적용
       setTimeout(() => {
+        sound.playBomb();
         this.enemies.splice(enemyIndex, 1);
         this.projectiles.splice(projectileIndex, 1);
       }, 0);
