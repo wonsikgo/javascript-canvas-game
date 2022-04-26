@@ -9,8 +9,6 @@ const PROJECTILE_COLOR = "white";
 const PROJECTILE_RADIUS = 5;
 const PROJECTILE_VELOCITY = 4;
 
-const ENEMY_VELOCITY = 2;
-
 export default class Game {
   constructor() {
     this.canvas = document.querySelector("canvas");
@@ -33,7 +31,8 @@ export default class Game {
 
     this.animationId = null;
     this.score = 0;
-
+    this.level = 1;
+    this.speedByLevel = 1;
     this.addClickEvent();
   }
 
@@ -43,6 +42,8 @@ export default class Game {
     this.enemies = [];
     this.particles = [];
     this.score = 0;
+    this.level = 1;
+    this.speedByLevel = 1;
     this.scoreEl.innerHTML = "0";
     this.bigScoreEl.innerHTML = "0";
   }
@@ -77,6 +78,13 @@ export default class Game {
     setInterval(() => {
       const radius = this.getRandomNumber(30, 4);
 
+      // 3000점 마다 난이도 상승
+      if (this.score / this.level / 3000 > 1) {
+        this.level++;
+        this.speedByLevel = this.speedByLevel * 1.25;
+        console.log("스피드 업");
+      }
+
       let x;
       let y;
 
@@ -97,8 +105,8 @@ export default class Game {
         this.canvas.width / 2 - x
       );
       const velocity = {
-        x: Math.cos(angle) * ENEMY_VELOCITY,
-        y: Math.sin(angle) * ENEMY_VELOCITY,
+        x: Math.cos(angle) * this.speedByLevel,
+        y: Math.sin(angle) * this.speedByLevel,
       };
       this.enemies.push(new Enemy(this.c, x, y, radius, color, velocity));
     }, 1000);
