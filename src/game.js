@@ -6,6 +6,9 @@ import Enemy from "./enemy.js";
 import Particle from "./particle.js";
 import * as sound from "./sound.js";
 
+const PLAYER_COLOR = "white";
+const PLAYER_RADIUS = 10;
+
 const PROJECTILE_COLOR = "white";
 const PROJECTILE_RADIUS = 5;
 const PROJECTILE_VELOCITY = 4;
@@ -43,7 +46,13 @@ export default class Game {
   init() {
     sound.playBgm();
     this.isPlay = true;
-    this.player = new Player(this.c, this.x, this.y, 10, "white");
+    this.player = new Player(
+      this.c,
+      this.x,
+      this.y,
+      PLAYER_RADIUS,
+      PLAYER_COLOR
+    );
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
