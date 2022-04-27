@@ -1,14 +1,12 @@
 "use strict";
 
-const friction = 0.99;
+import Circle from "./circle.js";
 
-export default class Particle {
+const FRICTION = 0.99;
+
+export default class Particle extends Circle {
   constructor(canvas, x, y, radius, color, velocity) {
-    this.canvas = canvas;
-    this.x = x;
-    this.y = y;
-    this.radius = radius;
-    this.color = color;
+    super(canvas, x, y, radius, color);
     this.velocity = velocity;
     this.alpha = 1;
   }
@@ -16,17 +14,14 @@ export default class Particle {
   draw() {
     this.canvas.save();
     this.canvas.globalAlpha - this.alpha;
-    this.canvas.beginPath();
-    this.canvas.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    this.canvas.fillStyle = this.color;
-    this.canvas.fill();
+    super.draw();
     this.canvas.restore();
   }
 
   update() {
     this.draw();
-    this.velocity.x *= friction;
-    this.velocity.y *= friction;
+    this.velocity.x *= FRICTION;
+    this.velocity.y *= FRICTION;
     this.x = this.x + this.velocity.x;
     this.y = this.y + this.velocity.y;
     this.alpha -= 0.01;

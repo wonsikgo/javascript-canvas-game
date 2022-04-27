@@ -1,6 +1,6 @@
 "use strict";
 
-import Player from "./player.js";
+import Player from "./circle.js";
 import Projectile from "./projectile.js";
 import Enemy from "./enemy.js";
 import Particle from "./particle.js";
