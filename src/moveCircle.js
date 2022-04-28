@@ -2,7 +2,7 @@
 
 import Circle from "./circle.js";
 
-export default class Enemy extends Circle {
+export default class moveCircle extends Circle {
   constructor(canvas, x, y, radius, color, velocity) {
     super(canvas, x, y, radius, color);
     this.velocity = velocity;

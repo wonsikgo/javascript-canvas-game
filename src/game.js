@@ -1,8 +1,8 @@
 "use strict";
 
 import Player from "./circle.js";
-import Projectile from "./projectile.js";
-import Enemy from "./enemy.js";
+import Projectile from "./moveCircle.js";
+import Enemy from "./moveCircle.js";
 import Particle from "./particle.js";
 import * as sound from "./sound.js";
 
