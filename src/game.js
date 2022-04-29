@@ -34,6 +34,7 @@ export default class Game {
     this.particles = [];
 
     this.animationId = null;
+    this.enemyCreateIntervalId = null;
     this.score = 0;
     this.level = 1;
     this.speedByLevel = 1;
@@ -93,7 +94,7 @@ export default class Game {
 
   spawnEnemies() {
     if (!this.isPlay) return;
-    setInterval(() => {
+    this.enemyCreateIntervalId = setInterval(() => {
       const radius = this.getRandomNumber(30, 4);
 
       // 3000점 마다 난이도 상승
@@ -211,6 +212,7 @@ export default class Game {
       sound.playEndGame();
       sound.stopBgm();
       cancelAnimationFrame(this.animationId);
+      clearInterval(this.enemyCreateIntervalId);
 
       this.bigScoreEl.innerHTML = this.score;
       this.showPopup();
