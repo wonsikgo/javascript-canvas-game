@@ -13,8 +13,24 @@ const PROJECTILE_COLOR = "white";
 const PROJECTILE_RADIUS = 5;
 const PROJECTILE_VELOCITY = 4;
 
-export default class Game {
-  constructor() {
+export default class GameBuilder {
+  playColor(color) {
+    this.color = color;
+    return this;
+  }
+
+  gameLevel(level) {
+    this.level = level;
+    return this;
+  }
+
+  build() {
+    return new Game(this.color, this.level);
+  }
+}
+
+class Game {
+  constructor(color, level) {
     this.canvas = document.querySelector("canvas");
     this.c = this.canvas.getContext("2d");
     this.canvas.width = window.innerWidth;
@@ -29,6 +45,7 @@ export default class Game {
     this.y = this.canvas.height / 2;
 
     this.player = null;
+    this.playColor = color;
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
@@ -52,7 +69,7 @@ export default class Game {
       this.x,
       this.y,
       PLAYER_RADIUS,
-      PLAYER_COLOR
+      this.playColor
     );
     this.projectiles = [];
     this.enemies = [];

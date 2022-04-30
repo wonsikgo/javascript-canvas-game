@@ -1,8 +1,11 @@
 "use strcit";
 
-import Game from "./game.js";
+import GameBuilder from "./game.js";
 
-const game = new Game();
+const game = new GameBuilder()
+  .playColor("white") //
+  .gameLevel(1)
+  .build();
 
 const startGameBtn = document.querySelector("#startGameBtn");
 
