@@ -6,10 +6,7 @@ import Enemy from "./moveCircle.js";
 import Particle from "./particle.js";
 import * as sound from "./sound.js";
 
-const PLAYER_COLOR = "white";
 const PLAYER_RADIUS = 10;
-
-const PROJECTILE_COLOR = "white";
 const PROJECTILE_RADIUS = 5;
 const PROJECTILE_VELOCITY = 4;
 
@@ -44,8 +41,8 @@ class Game {
     this.x = this.canvas.width / 2;
     this.y = this.canvas.height / 2;
 
-    this.player = null;
     this.playColor = color;
+    this.player = null;
     this.projectiles = [];
     this.enemies = [];
     this.particles = [];
@@ -53,7 +50,7 @@ class Game {
     this.animationId = null;
     this.enemyCreateIntervalId = null;
     this.score = 0;
-    this.level = 1;
+    this.level = level;
     this.speedByLevel = 1;
 
     this.isPlay = false;
@@ -102,7 +99,7 @@ class Game {
           this.canvas.width / 2,
           this.canvas.height / 2,
           PROJECTILE_RADIUS,
-          PROJECTILE_COLOR,
+          this.playColor,
           velocity
         )
       );
